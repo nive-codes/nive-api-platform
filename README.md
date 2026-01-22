@@ -244,7 +244,7 @@ This repository includes a complete set of architecture documents
 describing the platform’s structure, responsibilities, and design decisions.
 
 - [Architecture Overview](ARCHITECTURE_OVERVIEW.md)
-- [Architecture Decisions](ARCHITECTURE_DECISIONS.md)
+- [Architecture Decisions](DECISIONS.md.md)
 
 These documents serve as both:
 - a reference implementation, and

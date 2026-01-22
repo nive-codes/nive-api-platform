@@ -236,7 +236,7 @@ application 계층에서 발생하는 모든 예외는 `AbstractRestException`�
 완전한 아키텍처 문서 세트가 포함되어 있습니다.
 
 - [아키텍처 개요](ARCHITECTURE_OVERVIEW.md)
-- [아키텍처 설계 결정](ARCHITECTURE_DECISIONS.md)
+- [아키텍처 설계 결정](DECISIONS.md)
 
 이 문서들은 다음 목적을 동시에 가집니다.
 - 실제 구현을 기준으로 한 아키텍처 레퍼런스

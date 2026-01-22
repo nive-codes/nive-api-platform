@@ -1,4 +1,4 @@
-# Module Responsibilities
+# Architecture Overview
 
 
 > 이 섹션은 본 플랫폼의 멀티 모듈 구성을 요약합니다.
