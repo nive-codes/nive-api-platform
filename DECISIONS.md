@@ -3,7 +3,7 @@
 이 문서는 본 플랫폼을 설계하며 내린 주요 기술적 결정과
 그 배경을 기록합니다.
 각 결정은 실제 프로젝트 수행과 운영 과정에서 겪었던 문제들을 기반으로 합니다.
-궁금한 사항은 https://nive-codes.tistory.com에서 확인 바랍니다.
+궁금한 사항은 https://nive-codes.tistory.com 에서 확인 바랍니다.
 
 ## Why not traditional Service Layer?
 전통적인 Service 계층 구조는 초기에는 단순하고 이해하기 쉽지만,
