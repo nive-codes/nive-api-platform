@@ -1,0 +1,70 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.4'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.hibernate.orm' version '6.6.11.Final'
+	id 'org.graalvm.buildtools.native' version '0.10.6'
+}
+
+group = 'com.nive'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+//정적 리소스 일부만 처리하도록 처리
+processResources {
+	exclude 'static/upload/**'
+	exclude 'static/index.html'
+}
+
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+	implementation project(":nive-domain")
+	implementation project(":nive-common")
+	implementation project(":nive-web")
+	implementation project(":nive-application")
+
+
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'  // maria db 최신 안정 버전 권장
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+hibernate {
+	enhancement {
+		enableAssociationManagement = true
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// 파일 저장 관련 테스트 로직은 github action 등에서 동작 안할 수 있으므로 제외 처리
+test {
+	exclude '**/com/nive/core/core/file/strategy/**'
+}
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs += '-parameters'
+}
+
+//test시 aot 비활성화
+tasks.named('processTestAot') {
+	enabled = false
+}

@@ -1,0 +1,109 @@
+plugins {
+//    id 'java'
+    id 'java-library'
+    id 'io.spring.dependency-management'
+
+}
+
+group = 'com.nive'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+/**
+ * spring 버전 강제(TODO 통합 버전 관리는 진행해야함.)
+ */
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.4"
+    }
+}
+
+dependencies {
+    //application만 아래  모듈을 참조, application을 참조하는 모듈은 아래 모듈 사용 불가
+    implementation project(":nive-common")
+    implementation project(":nive-domain")
+
+
+    /*================================================================================================
+     * Spring WEB + JPA + Swagger
+    * ================================================================================================
+    * */
+//    api 'org.springframework.boot:spring-boot-starter'
+    api 'org.springframework.boot:spring-boot-starter-web'      //httpServletRequest활용중
+    api 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'    //swagger 용 dependency(3버전 이상은 해당 디펜던시를 사용)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+
+    /*================================================================================================
+         * QueryDSL
+        * ================================================================================================
+        * */
+    api 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+
+    /*================================================================================================
+     * security + JWT Token
+    * ================================================================================================
+    * */
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // or gson
+    implementation 'com.warrenstrange:googleauth:1.5.0'	//totp(google otp)
+    api 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'	//Jasypt -> 암호화/복호화 관련
+
+    /*================================================================================================
+      * file(aws s3 + thumbnail)
+     * ================================================================================================
+     * */
+    api 'software.amazon.awssdk:s3:2.20.43'  //s3파일 업로드 의존성 추가(업로드 외 설정으로 인한 api. key나 role로 인한 권한 처리는 web에서 처리)
+//    implementation 'net.coobird:thumbnailator:0.4.14'   //파일 썸네일 생성(현재 사용안함-썸네일 관리는 프론트에서 처리 중)
+
+    /*================================================================================================
+       * redis
+      * ================================================================================================
+      * */
+
+    // Spring Data Redis (optional – RedisTemplate 등 사용할 경우)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    /*================================================================================================
+       * 기타 라이브러리
+      * ================================================================================================
+      * */
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.24'		//국제번호 체크 전화번호
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'		//log josn 화 (운영서버)
+
+    // Apache POI for Excel
+    implementation 'org.apache.poi:poi:5.2.5'         // .xls (HSSF)
+    implementation 'org.apache.poi:poi-ooxml:5.2.5'   // .xlsx (XSSF)
+
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Mockito (JUnit5 Extension 지원)
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+}
+
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- 공통 패턴: 로그 출력 시간, 레벨, traceId, token, 메서드, URL, 메시지 -->
+<!--    <property name="LOGBACK_PATTERN"-->
+<!--              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] [%X{trace_id}] [%X{token}] [%X{method} %X{uri}] - %msg%n"/>-->
+    <property name="LOGBACK_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] [%X{trace_id}] [%X{jti}] [%X{method} %X{uri}] - %msg%n"/>
+
+    <!-- 개발용 Console 로그 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOGBACK_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 운영용 JSON 로그 파일 -->
+    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/app-json.log</file>   <!--상대경로 처리 /app/logs -> logs로 변경, git action build 시 오류 방지-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/app-json-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--            <fileNamePattern>logs/app-json-%d{yyyy-MM-dd_HH_mm}.log</fileNamePattern>-->    <!--분마다 찍히도록 체크-->
+            <maxHistory>180</maxHistory>        <!--6개월 보관-->
+            <cleanHistoryOnStart>false</cleanHistoryOnStart>    <!--롤링 후에도 app-json.log는 유지-->
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <prettyPrint>true</prettyPrint>
+            <providers>
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                </timestamp>
+                <pattern>
+                    <pattern>
+                        {
+                        "level": "%level",
+                        "logger": "%logger",
+                        "trace_id": "%X{trace_id}",
+                        "jti": "%X{jti}",
+                        "method": "%X{method}",
+                        "uri": "%X{uri}",
+                        "message": "%message"
+                        }
+                    </pattern>
+                </pattern>
+                <stackTrace>
+                    <fieldName>stack_trace</fieldName>
+                </stackTrace>
+            </providers>
+        </encoder>
+    </appender>
+
+
+    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <fieldName>timestamp</fieldName>
+                </timestamp>
+                <logLevel>
+                    <fieldName>level</fieldName>
+                </logLevel>
+                <loggerName>
+                    <fieldName>logger</fieldName>
+                </loggerName>
+                <threadName>
+                    <fieldName>thread</fieldName>
+                </threadName>
+                <mdc /> <!-- trace_id, jti, method, uri 여기서 자동 주입 -->
+                <message />
+                <stackTrace>
+                    <fieldName>stack_trace</fieldName>
+                </stackTrace>
+            </providers>
+        </encoder>
+    </appender>
+
+<!--    25.10.01 이중 json으로 loki가 수집해가면서 error로 인한 스택트레이스가 짤리거나 정상적이지 못하는 문제 발생.-->
+<!-- JSON 형태로 stdout 찍는 Appender - prod, test용 docker logs용 json -->
+
+    <!--    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">-->
+<!--        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">-->
+<!--            <providers>-->
+<!--                <timestamp>-->
+<!--                    <fieldName>timestamp</fieldName>-->
+<!--                </timestamp>-->
+<!--                <pattern>-->
+<!--                    <pattern>-->
+<!--                        {-->
+<!--                        "level": "%level",-->
+<!--                        "logger": "%logger",-->
+<!--                        "trace_id": "%X{trace_id}",-->
+<!--                        "jti": "%X{jti}",-->
+<!--                        "method": "%X{method}",-->
+<!--                        "uri": "%X{uri}",-->
+<!--                        "message": "%message"-->
+<!--                        }-->
+<!--                    </pattern>-->
+<!--                </pattern>-->
+<!--                <stackTrace>-->
+<!--                    <fieldName>stack_trace</fieldName>-->
+<!--                </stackTrace>-->
+<!--            </providers>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+
+    <!-- Hibernate SQL 로그 설정 추가 -->
+<!--    <logger name="org.hibernate.SQL" level="DEBUG" />-->
+<!--    <logger name="org.hibernate.type.descriptor.sql" level="TRACE" />-->
+<!--    <logger name="org.hibernate.orm.jdbc.bind" level="TRACE" /> &lt;!&ndash; Hibernate 6.x 이상 버전용 &ndash;&gt;-->
+
+    <!-- 개발용 Profile -->
+    <springProfile name="dev">
+        <logger name="org.hibernate" level="DEBUG" />
+        <logger name="org.hibernate.SQL" level="DEBUG" />
+        <logger name="org.hibernate.type.descriptor.sql" level="DEBUG" />
+        <logger name="org.springframework" level="DEBUG" />
+        <logger name="org.springframework.data" level="DEBUG" />
+        <logger name="org.springframework.orm" level="DEBUG" />
+        <logger name="org.mariadb.jdbc" level="DEBUG" />
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="test">
+
+<!--        <logger name="org.hibernate" level="DEBUG" />-->
+<!--        <logger name="org.hibernate.SQL" level="DEBUG" />-->
+<!--        <logger name="org.hibernate.type.descriptor.sql" level="DEBUG" />-->
+<!--        <logger name="org.springframework" level="DEBUG" />-->
+<!--        <logger name="org.springframework.data" level="DEBUG" />-->
+<!--        <logger name="org.springframework.orm" level="DEBUG" />-->
+<!--        <logger name="org.mariadb.jdbc" level="DEBUG" />-->
+
+        <logger name="org.hibernate" level="INFO" />
+        <logger name="org.hibernate.SQL" level="INFO" />
+        <logger name="org.hibernate.type.descriptor.sql" level="INFO" />
+        <logger name="org.springframework" level="INFO" />
+        <logger name="org.springframework.data" level="INFO" />
+        <logger name="org.springframework.orm" level="INFO" />
+        <logger name="org.mariadb.jdbc" level="INFO" />
+
+        <root level="INFO">
+<!--            <appender-ref ref="CONSOLE"/>-->
+            <appender-ref ref="CONSOLE_JSON"/>      <!--docker log json 출력-->
+            <appender-ref ref="JSON_FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- 운영용 Profile (INFO 이상만 로그로 기록) -->
+    <springProfile name="prod">
+        <logger name="org.hibernate" level="INFO" />
+        <logger name="org.hibernate.SQL" level="INFO" />
+        <logger name="org.hibernate.type.descriptor.sql" level="INFO" />
+        <logger name="org.springframework" level="INFO" />
+        <logger name="org.springframework.data" level="INFO" />
+        <logger name="org.springframework.orm" level="INFO" />
+        <logger name="org.mariadb.jdbc" level="INFO" />
+        <root level="INFO">
+<!--            <appender-ref ref="CONSOLE"/>-->
+            <appender-ref ref="CONSOLE_JSON"/>      <!--docker log json 출력-->
+            <appender-ref ref="JSON_FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>

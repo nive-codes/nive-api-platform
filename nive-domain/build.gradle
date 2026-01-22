@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management'
+}
+
+group = 'com.nive'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+/****************************************************************
+ * QueryDSL
+ *****************************************************************/
+def querydslDir = "$buildDir/generated/sources/annotationProcessor/java/main"
+
+sourceSets {
+    main {
+        java {
+            srcDirs += querydslDir
+        }
+    }
+}
+
+/**
+ * spring 버전 강제(TODO 통합 버전 관리는 진행해야함.)
+ */
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.4"
+    }
+}
+
+dependencies {
+        implementation project(":nive-common")
+
+        // JPA / Spring Data (BOM 관리)
+        implementation 'jakarta.persistence:jakarta.persistence-api'
+        implementation 'org.springframework.data:spring-data-jpa'
+
+        // QueryDSL (BOM 비관리 → 버전 명시)
+        implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+        annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+
+        // JPA Annotation Processor (QueryDSL 생성용)
+        annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+        annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+
+        // Jackson (BOM 관리)
+        implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+        // Lombok (BOM 비관리 → 버전 명시)
+        compileOnly 'org.projectlombok:lombok:1.18.30'
+        annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    }

@@ -1,0 +1,40 @@
+# Docker
+Dockerfile
+docker-compose.yml
+
+
+# Environment & config files
+.github/
+.env
+.env.*
+*.env
+*.config
+*.cfg
+*.ini
+*.log
+*.iml
+*.conf
+
+
+# Shell scripts
+# *.sh
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+
+logs/
+
+
+out/
+build/
+.gradle/
+
+# Spring resources - local / env specific
+src/main/resources/application.yml
+src/main/resources/application-dev.yml
+src/main/resources/application-test.yml
+src/main/resources/application-prod.yml
+

@@ -1,0 +1,30 @@
+# [NOTE] SAMPLE이므로 참고 후 수정하신 뒤 사용 바랍니다.
+
+version: '3.9'
+
+services:
+  api-local:
+    container_name: example-core-api
+    ports:
+      - "9080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=test #강제로 주입
+      - LOG_PATH=/app/logs
+      - SCHEDULER_ENABLED=false #강제로 주입(스케쥴러 담당 API서버)
+    volumes:
+        - /Desktop/docker/core-test/logs:/app/logs # 로그 파일을 로컬에서 확인하고 싶을 경우 호스트(로컬) : 컨테이너 내부
+        - /Desktop/docker/core-test/uploads:/app/uploads # 첨부파일 업로드 위치(로컬)
+
+    command:
+      - java
+      - -Xms512m
+      - -Xmx1024m
+      - -Djava.awt.headless=true
+      - -XX:+UseContainerSupport
+      - -XX:+UseG1GC
+      - -Duser.timezone=Asia/Seoul
+      - -jar
+      - /app.jar
+
+
+# docker-compose -f docker-compose.yml -f docker-compose.test.yml upd -d --build

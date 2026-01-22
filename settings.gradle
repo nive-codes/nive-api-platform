@@ -1,0 +1,6 @@
+rootProject.name = 'nive-api-platform-core'
+
+include 'nive-common'
+include 'nive-domain'
+include 'nive-web'
+include 'nive-application'

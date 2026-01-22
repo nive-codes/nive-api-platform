@@ -1,0 +1,222 @@
+# =========================================================
+# SAMPLE CONFIG FILE
+# This file is provided as an example.
+# Please review and modify values before use.
+# =========================================================
+
+spring:
+  profiles:
+    active: dev  #[NOTE] 개발 시엔 'dev', 테스트서버는 'test', 운영은 'prod' (환경 변수 등에서 지정하도록 처리) - @Profile 애토네이션 참조 바랍니다.
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/test  #[TODO] REQUIRED
+    username: test  #[TODO] REQUIRED
+    password: test12 #[TODO] REQUIRED
+  messages:
+    encoding: UTF-8
+  web:
+    resources:
+      static-locations: file:src/main/resources/static/ #[TODO] REQUIRED 본인이 원하는 정적 파일 경로
+  jpa:
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    hibernate:
+      ddl-auto: none  # 테스트 후 자동 정리 (또는 create)
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+  jackson:
+    time-zone: Asia/Seoul #timezone 설정
+  output:
+    ansi:
+      enabled: always # 선택적으로 logging 시간도 맞추고 싶다면
+
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 100MB
+
+--- #redis 사용 여부
+spring:
+  redis:
+    enabled: false
+
+# [TODO] REDIS 사용하지 않는다면 패스, 이 경우 주석할 것. redis bucket 알고리즘으로 API RateLimit 활용 등
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#      timeout: 3000
+
+
+
+--- #jwt 기본 값
+jwt:
+  secret: ${JWT_SECRET}  #[TODO] REQUIRED
+  issuer: ${JWT_ISSUER} #[TODO] REQUIRED
+  access-token-expiration-minutes: 30 #Access Token 유효 시간 (분 단위, 일반적으로 15~30분)
+  refresh-token-expiration-days: 7 #Refresh Token 유효 시간 (일 단위, 일반적으로 7~14일)
+
+--- #x-forwarded-for 파싱 처리
+server:
+  forward-headers-strategy: framework #x-forwarded-for 파싱 처리
+---
+
+--- #필터 등 타지 않을 url 경로 처리(actuator는 별도 필터에서 검증)
+filter:
+  excluded-paths:
+    - /aws/health-check
+    - /swagger-ui
+    - /v3/api-docs
+    - /swagger-resources
+    - /webjars
+    - /h2-console
+    - /openapi
+    - /docs
+    - /favicon.ico
+    - /uploads
+    - /support
+    - /actuator
+    - /api/test
+
+--- #swagger 설정
+springdoc:
+  api-docs:
+    path: /openapi        #  Swagger API 문서의 경로 커스터마이징
+  swagger-ui:
+    disable-swagger-default-url: false #  기본 API 문서 페이지 자동 열림 방지
+    doc-expansion: none                #  접힌 상태로 API 노출
+    tags-sorter: alpha                 #  태그 알파벳 순 정렬
+    operations-sorter: alpha           #  메서드 정렬
+    display-request-duration: true     #  요청 시간 표시 (디버깅용)
+    default-produces-media-type: application/json;charset=UTF-8
+    default-consumes-media-type: application/json;charset=UTF-8
+    filter: true                       #  상단 필터 기능 추가
+    path: /docs
+
+
+--- #화이트리스트 ips
+security:
+  whitelist:
+    allowed-ips:
+      - 127.0.0.1
+      - 0:0:0:0:0:0:0:1
+      - 172.18.0.1
+      - localhost
+
+
+--- #실제 메일/문자 발송 여부
+infra:
+  mail:
+    send: false
+  sms:
+    send: false
+  tunstile: false
+  google-chat:    #구글 웹 훅 쓰는 경우
+    webhook-url: #[TODO] REQUIRED 구글 웹훅을 쓰는 경우
+
+--- # mail gun 메일 발송
+mailgun:
+  api-key: #[TODO] REQUIRED
+  domain: #[TODO] REQUIRED
+
+--- # nhn 문자 발송
+nhn:
+  sms:
+    api-key: #[TODO] REQUIRED
+    secret-key: #[TODO] REQUIRED
+
+--- #cloudflare tunstile 처리
+cloudflare:
+  turnstile:
+    key: #[TODO] REQUIRED
+    secret-key: #[TODO] REQUIRED
+
+--- # mfa 암호화 키
+jasypt:
+  encryptor:
+    password: ${JASYPT_PASSWORD} #[TODO] REQUIRED
+
+--- # 개인정보 암호화/복호화를 위한 키
+security:
+  crypto:
+    aes-key: ${CRYPTO_AES_KEY} #[TODO] REQUIRED
+
+--- #spring actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    enable:
+      processor: false
+
+
+--- # dev 전용
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
+
+--- #스케쥴러 활용 여부
+scheduler:
+  enabled: ${SCHEDULER_ENABLED:false}
+---
+
+--- #현재 api의 서버 - server-domain의 경우 로컬 파일 경로로도 활용되므로, 로컬 파일 업로드를 활용하는 경우 체크가 필요합니다.
+api-info:
+  server-domain: localhost:8080
+  front-domain: localhost:3000
+  admin-domain: localhost:3000
+---
+
+--- #swagger 설정
+springdoc:
+  api-docs:
+  swagger-ui:
+    display-request-duration: true     #  요청 시간 표시 (디버깅용)
+
+--- #파일 설정
+file: #기본적으로 springboot의 경우 static/에 저장됩니다.
+  default.storage: local # 파일 전략 기본은 local, s3는 서버가 2개 이상이거나 기본저장소가 있는 경우 지정바랍니다.
+  local:
+    path: src/main/resources/static   #프로젝트 경로
+    path-prefix: uploads/ #db에 저장될 최초의 경로 (로컬의 경우 uploads같은 특정 디렉토리를 지정 후 filter 등은 타지 않도록 경로 패스 처리되어 있으므로 주의 바랍니다)
+  s3:
+    default-bucket: main # s3 기본 버킷, 활용하는 경우 아래값 필수(accessKey로 활용하고자 하는 경우 발급 필요. AWS 보안상 ROLE 부여로 처리하는게 좋음)
+    buckets:
+      main:   #일반 정적 파일 업로드
+        bucket-name: example-api-test
+        region: ap-northeast-2
+        access-key: ${AWS_ACCESS_KEY} #[TODO] use s3,  required. but if used ec2, use ec2 roles.
+        secret-key: ${AWS_SECRET_KEY} #[TODO] use s3,  required. but if used ec2, use ec2 roles.
+        cloud-front-url: https://static-test.example.com
+        path-prefix:
+      personal:  #개인정보 파일
+        bucket-name: example-api-test-personal
+        region: ap-northeast-2
+        access-key: ${AWS_PERSONAL_ACCESS_KEY} #[TODO] use s3,  required. but if used ec2, use ec2 roles.
+        secret-key: ${AWS_PERSONAL_ACCESS_KEY} #[TODO] use s3,  required. but if used ec2, use ec2 roles.
+        cloud-front-url:
+        path-prefix:
+
+
+  # 썸네일 경로 지정이 필요하면
+  thumbnail:
+    suffix: "_thumb"
+    width: 300
+    height: 300
+
+--- #cors 설정
+cors:
+  allowed-origins:
+    - "http://localhost:*"
+    - "http://localhost:*"
+    - "http://127.0.0.1:*"
+    - "http://192.168.0.*:*"
+    - "https://api.server.com"

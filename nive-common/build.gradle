@@ -1,0 +1,44 @@
+plugins {
+    id 'java-library'
+
+}
+
+group = 'com.nive'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+
+//version 명시해줘야된다(plugin에서 명시를 하지 않았으므로)
+dependencies {
+    // Spring Core (경량 유틸만)
+    implementation 'org.springframework:spring-core:6.1.6'
+
+    // 전화번호 검증
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.24'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // logging contract
+    api 'org.slf4j:slf4j-api:2.0.13'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
