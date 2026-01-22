@@ -46,6 +46,14 @@ nive-platform
 └── nive-web           # Spring Boot configuration / Security / Filters
 ```
 
+> 📐 **Architecture Documentation**
+>
+> This project is built on a clearly defined multi-module architecture.
+>
+> To understand **why each module exists, what it owns, and how requests flow**,  
+> please refer to the central architecture index:
+>
+> 👉 **[Architecture Overview](ARCHITECTURE.md)**
 ---
 
 ### Dependency Direction
@@ -229,6 +237,18 @@ for API-based services, allowing teams to focus on domain logic from day one.
 - Infrastructure-friendly default configurations
 
 ---
+
+## 📚 Architecture Reference
+
+This repository includes a complete set of architecture documents
+describing the platform’s structure, responsibilities, and design decisions.
+
+- [Architecture Overview](ARCHITECTURE_OVERVIEW.md)
+- [Architecture Decisions](ARCHITECTURE_DECISIONS.md)
+
+These documents serve as both:
+- a reference implementation, and
+- an architectural guide for future extensions.
 
 ## 📄 License
 
