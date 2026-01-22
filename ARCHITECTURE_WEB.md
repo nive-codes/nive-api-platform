@@ -11,7 +11,7 @@ web 모듈은 비즈니스 로직을 포함하지 않으며,
 기술 정책을 실제로 실행하는 실행 레이어입니다.
 
 
-⸻
+
 ## 1️⃣ Security Architecture
 
 ### 🔐 JWT 기반 인증 / 인가 파이프라인
@@ -40,7 +40,7 @@ application / domain 계층으로 보안 책임이 전파되지 않습니다.
 - 인증 실패/인가 실패 응답의 일관성 보장
 - 회원 당 토큰이 DB화 되어 각 토큰을 원격으로 로그아웃 (만료처리) 할 수 있도록 가능
 
-⸻
+
 
 ## 2️⃣ Servlet Filter Layer
 
@@ -98,7 +98,7 @@ Controller 진입 이전의 HTTP 레벨 전처리/후처리를 담당하는
 - 로깅/검증 과정에서 Request 재사용 가능
 - 클라이언트 환경 기반 정책 확장 용이
 - 운영 환경에서 문서 엔드포인트 보호
-- 
+-
 ## 3️⃣ Interceptor Layer
 
 Interceptor Layer는
