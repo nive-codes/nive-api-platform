@@ -1,4 +1,4 @@
-rootProject.name = 'nive-api-platform-core'
+rootProject.name = 'nive-api-platform-public'
 
 include 'nive-common'
 include 'nive-domain'
