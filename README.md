@@ -243,6 +243,7 @@ for API-based services, allowing teams to focus on domain logic from day one.
 This repository includes a complete set of architecture documents
 describing the platform’s structure, responsibilities, and design decisions.
 
+- [Architecture Index](ARCHITECTURE.md)
 - [Architecture Overview](ARCHITECTURE_OVERVIEW.md)
 - [Architecture Decisions](DECISIONS.md.md)
 

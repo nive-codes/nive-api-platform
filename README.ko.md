@@ -235,6 +235,7 @@ application 계층에서 발생하는 모든 예외는 `AbstractRestException`�
 플랫폼의 구조, 책임 분리, 설계 판단을 설명하는
 완전한 아키텍처 문서 세트가 포함되어 있습니다.
 
+- [아키텍처 목차](ARCHITECTURE.md)
 - [아키텍처 개요](ARCHITECTURE_OVERVIEW.md)
 - [아키텍처 설계 결정](DECISIONS.md)
 
