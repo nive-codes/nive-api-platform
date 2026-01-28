@@ -29,7 +29,7 @@ allowing teams to start developing domain APIs immediately.
 
 - **Language**: OpenJDK 17
 - **Framework**: Spring Boot 3.4.x
-- **Persistence**: JPA + QueryDSL (with 일부 Native Queries)
+- **Persistence**: JPA + QueryDSL (with Native Queries)
 - **Architecture**: REST API + Multi-Module
 - **Security**: JWT-based Stateless Authentication
 - **External APIs**: MailGun, Cloudflare Turnstile, NHN SMS, Google Chat Bot
