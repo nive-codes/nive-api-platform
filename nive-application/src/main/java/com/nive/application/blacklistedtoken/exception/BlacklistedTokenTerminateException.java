@@ -49,8 +49,8 @@ public class BlacklistedTokenTerminateException extends AbstractRestException {
        Builder
        ========================= */
 
-    public static BlacklistedTokenTerminateException.Builder builder(BaseCode errorCode) {
-        return new BlacklistedTokenTerminateException.Builder(errorCode);
+    public static Builder builder(BaseCode errorCode) {
+        return new Builder(errorCode);
     }
 
     public static class Builder {
@@ -67,18 +67,18 @@ public class BlacklistedTokenTerminateException extends AbstractRestException {
         }
 
         /** message override (escape hatch) */
-        public BlacklistedTokenTerminateException.Builder message(String message) {
+        public Builder message(String message) {
             this.message = message;
             return this;
         }
 
         /** LogLevel이 INFO인 경우 data는 API 응답에 포함됨 */
-        public BlacklistedTokenTerminateException.Builder data(Object data) {
+        public Builder data(Object data) {
             this.data = data;
             return this;
         }
 
-        public BlacklistedTokenTerminateException.Builder logLevel(LogLevel logLevel) {
+        public Builder logLevel(LogLevel logLevel) {
             this.logLevel = logLevel != null ? logLevel : LogLevel.ERROR;
             return this;
         }

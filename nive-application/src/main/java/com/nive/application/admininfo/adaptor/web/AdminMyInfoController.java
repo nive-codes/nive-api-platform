@@ -49,7 +49,7 @@ public class AdminMyInfoController {
             @AuthenticationPrincipal UserLoginInfo userLoginInfo,
             HttpServletRequest request
     ) {
-        return ApiResponseBody.ok(updateMyAdminInfoUseCase.update(dto, userLoginInfo, request));
+        return ApiResponseBody.updated(updateMyAdminInfoUseCase.update(dto, userLoginInfo, request));
     }
 
 

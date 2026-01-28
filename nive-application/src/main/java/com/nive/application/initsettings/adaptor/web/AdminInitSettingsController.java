@@ -36,7 +36,7 @@ public class AdminInitSettingsController {
     public ApiResponseBody<Long> update(@PathVariable(name = "id") Long id, @RequestBody @Valid AdminInitSettingsUpdateRequestDto dto,
                                         @AuthenticationPrincipal UserLoginInfo userLoginInfo){
 
-        return ApiResponseBody.ok(updateInitSettingsUseCase.updateInitSetting(id,dto, userLoginInfo));
+        return ApiResponseBody.updated(updateInitSettingsUseCase.updateInitSetting(id,dto, userLoginInfo));
 
     }
 

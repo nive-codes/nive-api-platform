@@ -81,7 +81,7 @@ public class AdminAuthController {
             @AuthenticationPrincipal UserLoginInfo userLoginInfo,
             HttpServletRequest request
     ) {
-        return ApiResponseBody.ok(ApiCode.CREATED,createAdminInfoUseCase.save(dto, userLoginInfo, request));
+        return ApiResponseBody.created(createAdminInfoUseCase.save(dto, userLoginInfo, request));
     }
 
     @Operation(summary = "관리자 수정", description = "관리자 정보를 수정합니다.")
@@ -96,7 +96,7 @@ public class AdminAuthController {
             @AuthenticationPrincipal UserLoginInfo userLoginInfo,
             HttpServletRequest request
     ) {
-        return ApiResponseBody.ok(updateAdminInfoUseCase.update(id, dto, userLoginInfo, request));
+        return ApiResponseBody.updated(updateAdminInfoUseCase.update(id, dto, userLoginInfo, request));
     }
 
     @Operation(summary = "관리자 정지 처리", description = "관리자를 정지(삭제) 처리 합니다.")
@@ -107,7 +107,7 @@ public class AdminAuthController {
             HttpServletRequest request
     ) {
         suspendAdminInfoUseCase.suspended(id, userLoginInfo, request);
-        return ApiResponseBody.ok();
+        return ApiResponseBody.updated();
     }
 
 
@@ -119,7 +119,7 @@ public class AdminAuthController {
             HttpServletRequest request
     ) {
         suspendAdminInfoUseCase.checkSuspended(dto, userLoginInfo, request);
-        return ApiResponseBody.ok();
+        return ApiResponseBody.updated();
     }
 
     @Operation(summary = "관리자 블락 처리", description = "관리자 블락 처리를 진행합니다.")
@@ -130,6 +130,6 @@ public class AdminAuthController {
             HttpServletRequest request
     ) {
         blackAdminInfoUseCase.adminBlock(id, userLoginInfo, request);
-        return ApiResponseBody.ok();
+        return ApiResponseBody.updated();
     }
 }

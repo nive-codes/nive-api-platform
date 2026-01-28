@@ -48,8 +48,8 @@ public class JwtValidationException extends AbstractRestException {
        Builder
        ========================= */
 
-    public static JwtValidationException.Builder builder(BaseCode errorCode) {
-        return new JwtValidationException.Builder(errorCode);
+    public static Builder builder(BaseCode errorCode) {
+        return new Builder(errorCode);
     }
 
     public static class Builder {
@@ -66,18 +66,18 @@ public class JwtValidationException extends AbstractRestException {
         }
 
         /** message override (escape hatch) */
-        public JwtValidationException.Builder message(String message) {
+        public Builder message(String message) {
             this.message = message;
             return this;
         }
 
         /** LogLevel이 INFO인 경우 data는 API 응답에 포함됨 */
-        public JwtValidationException.Builder data(Object data) {
+        public Builder data(Object data) {
             this.data = data;
             return this;
         }
 
-        public JwtValidationException.Builder logLevel(LogLevel logLevel) {
+        public Builder logLevel(LogLevel logLevel) {
             this.logLevel = logLevel != null ? logLevel : LogLevel.ERROR;
             return this;
         }

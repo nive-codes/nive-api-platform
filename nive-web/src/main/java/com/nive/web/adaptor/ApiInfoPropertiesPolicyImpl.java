@@ -1,4 +1,4 @@
-package com.nive.web.config.properties.adaptor;
+package com.nive.web.adaptor;
 
 import com.nive.application.port.ApiInfoPropertiesPolicy;
 import com.nive.web.config.properties.ApiInfoProperties;

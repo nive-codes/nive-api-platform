@@ -4,7 +4,7 @@ import com.nive.web.security.exception.JwtAuthenticationException;
 import com.nive.common.response.ApiResponseBody;
 import com.nive.common.response.JwtErrorCode;
 import com.nive.common.response.LogLevel;
-import com.nive.web.filter.mdc.support.MocMetaDataUtil;
+import com.nive.web.filter.mdc.support.MdcMetaDataUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -71,7 +71,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json;charset=UTF-8");
 
         ApiResponseBody<?> body =
-                ApiResponseBody.fail(errorCode, message, MocMetaDataUtil.traceInfo());
+                ApiResponseBody.fail(errorCode, message, MdcMetaDataUtil.traceInfo());
 
         response.getWriter().write(objectMapper.writeValueAsString(body));
     }

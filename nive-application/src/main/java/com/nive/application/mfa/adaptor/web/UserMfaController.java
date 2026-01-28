@@ -50,6 +50,6 @@ public class UserMfaController {
   @DeleteMapping("/opt/delete")
   public ApiResponseBody<Void> otpDelete(@AuthenticationPrincipal UserLoginInfo userLoginInfo, @RequestBody @Valid InternalOtpVerifyRequestDto dto,  HttpServletRequest request) {
     disableOtpUseCase.disable(userLoginInfo, dto, request);
-    return ApiResponseBody.ok(ApiCode.DELETED);
+    return ApiResponseBody.deleted();
   }
 }

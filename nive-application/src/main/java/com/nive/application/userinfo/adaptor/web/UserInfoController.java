@@ -1,5 +1,7 @@
 package com.nive.application.userinfo.adaptor.web;
 
+import com.nive.application.login.usecase.LogoutUserUseCase;
+import com.nive.application.port.MdcMetaDataUtilProvider;
 import com.nive.application.userinfo.dto.*;
 import com.nive.application.userinfo.usecase.user.GetMyUserInfoUseCase;
 import com.nive.application.userinfo.usecase.user.UpdateMyUserInfoUseCase;
@@ -15,6 +17,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +42,8 @@ public class UserInfoController {
     private final UpdateMyUserInfoUseCase updateMyUserInfoUseCase;
     private final VerifyMyPasswordUseCase verifyMyPasswordUseCase;
     private final WithdrawMyUserInfoUseCase withdrawMyUserInfoUseCase;
+    private final LogoutUserUseCase logoutUserUseCase;
+    private final MdcMetaDataUtilProvider mdcMetaDataUtilProvider;
 
     @Operation(summary = "본인 정보 조회", description = "로그인한 대상의 정보를 확인합니다.")
     @ApiResponse(responseCode = "200", description = "조회 성공")
@@ -65,7 +72,7 @@ public class UserInfoController {
                                                 @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto){
         updateMyUserInfoUseCase.userUpdate(userLoginInfo,userUpdateRequestDto);
 
-        return ApiResponseBody.ok();
+        return ApiResponseBody.updated();
     }
 
 
@@ -76,12 +83,35 @@ public class UserInfoController {
     }
 
 
-    @PutMapping("/api/user/v1/info/withdraw")
+
+    @PostMapping("/api/open/v1/user/withdraw")
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴가 이루어지며 정해진 기간 이후 일부 회원 정보는 공백으로 대체됩니다.")
-    public ApiResponseBody<Void> withdraw(@Valid @RequestBody UserWithDrawDto dto, @AuthenticationPrincipal UserLoginInfo userLoginInfo, HttpServletRequest request){
+    public ResponseEntity<ApiResponseBody<Void>> withdraw(@Valid @RequestBody UserWithDrawDto dto,
+                                          @CookieValue(value = "REFRESH_TOKEN", required = false) String refreshToken,
+                                          @AuthenticationPrincipal UserLoginInfo userLoginInfo, HttpServletRequest request){
         withdrawMyUserInfoUseCase.userWithDraw(userLoginInfo,dto, request);
-        return ApiResponseBody.ok();
+
+        // refresh token 무효화 (blacklist)
+        if (refreshToken != null) {
+            logoutUserUseCase.logout(refreshToken, request);
+        }
+        //쿠키 삭제
+        ResponseCookie deleteCookie = ResponseCookie.from("REFRESH_TOKEN", "")
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/api")
+                .maxAge(0)
+                .build();
+
+        ApiResponseBody<Void> body = ApiResponseBody.ok();
+        body.setMeta(mdcMetaDataUtilProvider.getMeta());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body(body);
     }
+
 
 
 

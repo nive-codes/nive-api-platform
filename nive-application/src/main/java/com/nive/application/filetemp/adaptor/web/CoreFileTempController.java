@@ -66,7 +66,7 @@ public class CoreFileTempController {
             @ParameterObject  @Valid @ModelAttribute CoreFileTempRequestDto dto,             //multipart-/form-data처리 시 적용
             @AuthenticationPrincipal UserLoginInfo userLoginInfo
     ) {
-        return ApiResponseBody.ok(ApiCode.CREATED, uploadTempFilesUseCase.upload(files, dto, request, userLoginInfo));
+        return ApiResponseBody.created(uploadTempFilesUseCase.upload(files, dto, request, userLoginInfo));
     }
 
     @DeleteMapping("{tempId}")
@@ -85,7 +85,7 @@ public class CoreFileTempController {
                                         @AuthenticationPrincipal UserLoginInfo userLoginInfo) {
         deleteTempFileUseCase.deleteTemp(tempId,fileRepositoryType,bucketKeyParam, request, userLoginInfo);
 
-        return ApiResponseBody.ok(ApiCode.DELETED);
+        return ApiResponseBody.deleted();
     }
 
     @DeleteMapping
@@ -104,7 +104,7 @@ public class CoreFileTempController {
                                            @AuthenticationPrincipal UserLoginInfo userLoginInfo) {
         deleteTempFileUseCase.deleteTemps(tempIds,fileRepositoryType,bucketKeyParam, request, userLoginInfo);
 
-        return ApiResponseBody.ok(ApiCode.DELETED);
+        return ApiResponseBody.deleted();
     }
 
     @PatchMapping("/sort-order")
@@ -115,7 +115,7 @@ public class CoreFileTempController {
             HttpServletRequest request
     ) {
         sortTempFileUseCase.sort(sortUpdates, userLoginInfo, request);
-        return ApiResponseBody.ok();
+        return ApiResponseBody.updated();
     }
 
 

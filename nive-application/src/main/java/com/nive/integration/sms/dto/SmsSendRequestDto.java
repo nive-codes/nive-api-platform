@@ -32,7 +32,7 @@ public class SmsSendRequestDto {
 
 
     //메일 type + receiver + userId는 필수
-    public static SmsSendRequestDto.SmsSendRequestDtoBuilder builder(SmsTemplateType templateType, String phoneNumber, Long userId) {
+    public static SmsSendRequestDtoBuilder builder(SmsTemplateType templateType, String phoneNumber, Long userId) {
         return new SmsSendRequestDtoBuilder().smsTemplateType(templateType).phoneNumber(phoneNumber).userId(userId);
     }
 

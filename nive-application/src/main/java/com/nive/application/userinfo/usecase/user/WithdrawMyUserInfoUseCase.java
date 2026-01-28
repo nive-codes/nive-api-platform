@@ -53,6 +53,8 @@ public class WithdrawMyUserInfoUseCase {
             userPasswordVerificationStore.clearVerifiedFlag(user.getId());  //ttl 기반이나 redis면 자동으로 삭제되나 명시적 호출
             throw new BusinessRestException(ErrorCode.VALIDATION_FAILED, LogLevel.INFO);
         }
+
+        //[TODO] 회원 토큰 전체 삭제 처리
     }
 
     /**

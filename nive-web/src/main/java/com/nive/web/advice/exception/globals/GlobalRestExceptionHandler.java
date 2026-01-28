@@ -1,10 +1,10 @@
-package com.nive.web.config.exception.globals;
+package com.nive.web.advice.exception.globals;
 
 import com.nive.common.response.ApiResponseBody;
 
 import com.nive.common.response.ErrorCode;
 import com.nive.common.response.SystemErrorType;
-import com.nive.web.filter.mdc.support.MocMetaDataUtil;
+import com.nive.web.filter.mdc.support.MdcMetaDataUtil;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class GlobalRestExceptionHandler {
     public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorCode errorCode = ErrorCode.INVALID_FORMAT;
         log.warn("{}", ex); // 스택트레이스 별도 출력
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
 
@@ -51,7 +51,7 @@ public class GlobalRestExceptionHandler {
     public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleAccessDeniedException(AccessDeniedException ex) {
         ErrorCode errorCode = ErrorCode.FORBIDDEN;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
     // 400 - 필수 요청 파라미터 누락
@@ -59,7 +59,7 @@ public class GlobalRestExceptionHandler {
     public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleMissingParamException(MissingServletRequestParameterException ex) {
         ErrorCode errorCode = ErrorCode.VALIDATION_FAILED;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
     // 405 - 지원하지 않는 HTTP Method
@@ -67,7 +67,7 @@ public class GlobalRestExceptionHandler {
     public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleHttpMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
     // --- 이하 기존 예외 처리 그대로 유지 ---
@@ -76,7 +76,7 @@ public class GlobalRestExceptionHandler {
     public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleNotFoundException(NoSuchElementException ex) {
         ErrorCode errorCode = ErrorCode.NOT_FOUND;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -126,14 +126,14 @@ public class GlobalRestExceptionHandler {
     public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         ErrorCode errorCode = ErrorCode.INVALID_FORMAT;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleResourceNotFoundException(NoHandlerFoundException ex) {
         ErrorCode errorCode = ErrorCode.NOT_FOUND;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
     @ExceptionHandler({
@@ -157,28 +157,28 @@ public class GlobalRestExceptionHandler {
 
         return ResponseEntity
                 .status(errorCode.getStatus())
-                .body(ApiResponseBody.fail(errorCode, MocMetaDataUtil.traceInfo()));
+                .body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
 //    @ExceptionHandler(NullPointerException.class)
 //    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleNullPointerException(NullPointerException ex) {
 //        ErrorCode errorCode = ErrorCode.NULL_POINTER;
 //        log.error("{}", ex);
-//        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+//        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MdcMetaDataUtil.traceInfo()));
 //    }
 //
 //    @ExceptionHandler(IndexOutOfBoundsException.class)
 //    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleIndexOutOfBoundsException(IndexOutOfBoundsException ex) {
 //        ErrorCode errorCode = ErrorCode.INDEX_OUT_OF_BOUNDS;
 //        log.error("{}", ex);
-//        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+//        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MdcMetaDataUtil.traceInfo()));
 //    }
 //
 //    @ExceptionHandler(ArithmeticException.class)
 //    public ResponseEntity<ApiResponseBody<Map<String,Object>>>  handleArithmeticException(ArithmeticException ex) {
 //        ErrorCode errorCode = ErrorCode.ARITHMETIC_ERROR;
 //        log.error("{}", ex);
-//        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+//        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MdcMetaDataUtil.traceInfo()));
 //    }
 //
 //
@@ -187,7 +187,7 @@ public class GlobalRestExceptionHandler {
 //    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleIllegalStateException(IllegalStateException ex) {
 //        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
 //        log.error("{}", ex);
-//        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+//        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MdcMetaDataUtil.traceInfo()));
 //    }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -198,14 +198,14 @@ public class GlobalRestExceptionHandler {
         } else {
             log.error("{}", ex);
         }
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MocMetaDataUtil.traceInfo()));
+        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleGenericException(Exception ex) {
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
         log.error("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MocMetaDataUtil.traceInfo()));
+        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
     }
 
 }

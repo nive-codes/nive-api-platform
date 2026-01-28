@@ -3,6 +3,7 @@ package com.nive.application.login.adaptor.web;
 import com.nive.application.login.usecase.LoginAdminUseCase;
 import com.nive.application.login.usecase.LoginUserUseCase;
 import com.nive.application.login.usecase.LogoutUserUseCase;
+import com.nive.application.port.MdcMetaDataUtilProvider;
 import com.nive.application.signup.usecase.SignUpUserUseCase;
 import com.nive.application.login.dto.*;
 import com.nive.common.response.ApiResponseBody;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +41,10 @@ public class OpenAuthController {
     private final LoginAdminUseCase loginAdminUseCase;
     private final LoginUserUseCase loginUserUseCase;
     private final LogoutUserUseCase logoutUserUseCase;
+    private final MdcMetaDataUtilProvider mdcMetaDataUtilProvider;
+    // [TODO] properties로 web모듈에서 받아오도록 처리
+    @Value("${jwt.refresh-token-expiration-days}")
+    private long refreshTokenValidityInDays;
 
     /**
      * 로그인 API
@@ -54,22 +60,23 @@ public class OpenAuthController {
     @PostMapping("/api/open/v1/auth/admin/login")
     public ResponseEntity<ApiResponseBody<OpenLoginResponseDto>> adminLogin(@Valid @RequestBody OpenAdminLoginRequestDto requestDto, HttpServletRequest request) {
         OpenLoginResponseDto loginAfterDto = loginAdminUseCase.login(requestDto, request);
+        OpenLoginResponseDto responseDto = OpenLoginResponseDto.of(loginAfterDto.getAccessToken(), null, loginAfterDto.getUserStatus());
+        ApiResponseBody<OpenLoginResponseDto> body = ApiResponseBody.ok(responseDto);
+        body.setMeta(mdcMetaDataUtilProvider.getMeta());    //meta 정보 세팅
         if(loginAfterDto.isMfaRequired()){
             ResponseCookie refreshCookie = ResponseCookie.from("REFRESH_TOKEN",loginAfterDto.getRefreshToken())
                     .httpOnly(true)
                     .secure(false)       // IP + http 환경
                     .sameSite("Lax")     //내 사이트만 허용
                     .path("/api")
-                    .maxAge(Duration.ofDays(90))
+                    .maxAge(Duration.ofDays(refreshTokenValidityInDays))
                     .build();
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,refreshCookie.toString()).body(
-                    ApiResponseBody.ok(OpenLoginResponseDto.of(loginAfterDto.getAccessToken(), null, loginAfterDto.getUserStatus()))
-            );
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,refreshCookie.toString())
+                    .body(body);
         }
 
-        return ResponseEntity.ok().body(
-                ApiResponseBody.ok(OpenLoginResponseDto.of(loginAfterDto.getAccessToken(), null, loginAfterDto.getUserStatus()))
-        );
+        return ResponseEntity.ok()
+                .body(body);
 
     }
 
@@ -88,38 +95,47 @@ public class OpenAuthController {
     @PostMapping("/api/open/v1/auth/user/login")
     public ResponseEntity<ApiResponseBody<OpenLoginResponseDto>> userLogin(@Valid @RequestBody OpenUserLoginRequestDto requestDto, HttpServletRequest request) {
         OpenLoginResponseDto loginAfterDto = loginUserUseCase.userLogin(requestDto, request);
-        if(loginAfterDto.isMfaRequired()){
+        OpenLoginResponseDto responseDto = OpenLoginResponseDto.of(loginAfterDto.getAccessToken(), null, loginAfterDto.getUserStatus());
+
+        ApiResponseBody<OpenLoginResponseDto> body = ApiResponseBody.ok(responseDto);
+        body.setMeta(mdcMetaDataUtilProvider.getMeta());    //meta 정보 세팅
+
+        if(!loginAfterDto.isMfaRequired()){
             ResponseCookie refreshCookie = ResponseCookie.from("REFRESH_TOKEN",loginAfterDto.getRefreshToken())
                     .httpOnly(true)
                     .secure(false)       // IP + http 환경
                     .sameSite("Lax")     //내 사이트만 허용
                     .path("/api")
-                    .maxAge(Duration.ofDays(90))
+                    .maxAge(Duration.ofDays(refreshTokenValidityInDays))
                     .build();
 
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,refreshCookie.toString()).body(
-                    ApiResponseBody.ok(OpenLoginResponseDto.of(loginAfterDto.getAccessToken(), null, loginAfterDto.getUserStatus()))
+                    body
             );
         }
-        return ResponseEntity.ok().body(
-                ApiResponseBody.ok(OpenLoginResponseDto.of(loginAfterDto.getAccessToken(), null, loginAfterDto.getUserStatus())));
-
+        return ResponseEntity.ok().body(body);
     }
 
     @Operation(summary = "사용자 재로그인(OTP)", description ="MFA 설정 otp 포함 로그인 처리됩니다.")
     @PostMapping("/api/open/v1/auth/user/login/otp")
     public ResponseEntity<ApiResponseBody<OpenLoginResponseDto>> userLoginOtp(@Valid @RequestBody OpenLoginOtpRequestDto requestDto, HttpServletRequest request) {
         OpenLoginResponseDto loginAfterDto = loginUserUseCase.userLoginOtp(requestDto, request);
+
+        OpenLoginResponseDto responseDto = OpenLoginResponseDto.of(loginAfterDto.getAccessToken(), null, loginAfterDto.getUserStatus());
+
+        ApiResponseBody<OpenLoginResponseDto> body = ApiResponseBody.ok(responseDto);
+
+        body.setMeta(mdcMetaDataUtilProvider.getMeta());    //meta 정보 세팅
+
         ResponseCookie refreshCookie = ResponseCookie.from("REFRESH_TOKEN",loginAfterDto.getRefreshToken())
                 .httpOnly(true)
                 .secure(false)       // IP + http 환경
                 .sameSite("Lax")     //내 사이트만 허용
                 .path("/api")
-                .maxAge(Duration.ofDays(90))
+                .maxAge(Duration.ofDays(refreshTokenValidityInDays))
                 .build();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,refreshCookie.toString()).body(
-                ApiResponseBody.ok(OpenLoginResponseDto.of(loginAfterDto.getAccessToken(), null, loginAfterDto.getUserStatus()))
-        );
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,refreshCookie.toString())
+                .body(body);
     }
 
     /**
@@ -143,11 +159,12 @@ public class OpenAuthController {
                 .path("/api")       //api 시작
                 .maxAge(0)           //  쿠키 삭제
                 .build();
+        ApiResponseBody<Void> ok = ApiResponseBody.ok();
+        ok.setMeta(mdcMetaDataUtilProvider.getMeta());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE,deleteCookie.toString())
-                .body(ApiResponseBody.ok());
-
+                .body(ok);
     }
 
 

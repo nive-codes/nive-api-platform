@@ -49,7 +49,7 @@ public class OpenAuthCodeController {
   @PostMapping("/api/open/v1/auth/code")
   public ApiResponseBody<AuthCodeResponseDto> createAuthCode(@Valid @RequestBody AuthCodeRequestDto requestDto, @AuthenticationPrincipal UserLoginInfo userLoginInfo, HttpServletRequest request) {
     AuthCodeResponseDto authCodeResponseDto = sendVerificationCodeUseCase.send(requestDto,userLoginInfo,request);
-    return ApiResponseBody.ok(ApiCode.SUCCESS,authCodeResponseDto);
+    return ApiResponseBody.ok(authCodeResponseDto);
   }
 
   @Operation(

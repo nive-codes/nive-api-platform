@@ -1,10 +1,10 @@
-package com.nive.web.config.exception.business;
+package com.nive.web.advice.exception.business;
 
 import com.nive.common.exception.AbstractRestException;
 import com.nive.common.exception.BusinessRestException;
+import com.nive.web.filter.mdc.support.MdcMetaDataUtil;
 import com.nive.web.security.exception.JwtAuthenticationException;
 import com.nive.common.response.ApiResponseBody;
-import com.nive.web.filter.mdc.support.MocMetaDataUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -54,14 +54,14 @@ public class CustomRestExceptionHandler {
         }
 
         return ResponseEntity.status(ex.getErrorCode().getStatus())
-                .body(ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage(), MocMetaDataUtil.traceInfo()));
+                .body(ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage(), MdcMetaDataUtil.traceInfo()));
     }
 
     @ExceptionHandler(BusinessRestException.class)
     public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleBusinessRestException(BusinessRestException ex) {
 //        log.warn("BusinessRestException 발생");
 
-        Map<String, Object> metaData = MocMetaDataUtil.traceInfo();
+        Map<String, Object> metaData = MdcMetaDataUtil.traceInfo();
 
         switch (ex.getLogLevel()) {
             case INFO -> {
@@ -115,7 +115,7 @@ public class CustomRestExceptionHandler {
         }
 
         return ResponseEntity.status(ex.getErrorCode().getStatus())
-                .body(ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage(), MocMetaDataUtil.traceInfo()));
+                .body(ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage(), MdcMetaDataUtil.traceInfo()));
     }
 
 }

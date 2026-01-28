@@ -9,13 +9,13 @@ import java.util.Optional;
 
 /**
  * @author nive
- * @class MocMetaDataUtil
+ * @class MdcMetaDataUtil
  * @desc moc의 정보를 return해주는 헬퍼 클래스
  * @since 2025-05-08
  */
-public class MocMetaDataUtil {
+public class MdcMetaDataUtil {
 
-    private MocMetaDataUtil() {} // static 유틸 클래스이므로 생성자 private 처리
+    private MdcMetaDataUtil() {} // static 유틸 클래스이므로 생성자 private 처리
 
     /**
      * traceId + timestamp 포함된 공통 메타데이터 반환

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author nive
@@ -14,8 +15,8 @@ import lombok.Getter;
  * @since 2025-04-11
  */
 @Getter
+@Setter
 @Schema(description = "로그인 요청 DTO (관리자 / 사용자 공통)")
-@Builder(toBuilder = true)
 public class OpenUserLoginRequestDto {
 
     @NotNull

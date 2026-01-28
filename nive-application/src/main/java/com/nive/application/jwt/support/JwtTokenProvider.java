@@ -28,6 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
+    // [TODO] properties로 web모듈에서 받아오도록 처리
     /**
      * application.yml 값을 가져와서 세팅
      */

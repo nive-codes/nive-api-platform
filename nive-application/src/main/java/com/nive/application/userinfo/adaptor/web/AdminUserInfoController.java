@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -67,18 +68,19 @@ public class AdminUserInfoController {
         return ApiResponseBody.ok(findUserInfoByAdminUseCase.findById(id, userLoginInfo));
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "회원 정보 등록", description = "회원 정보를 등록합니다.")
     @PrivacyAccess(privacyAction = PrivacyAction.CREATE, targetType = PrivacyTargetType.USER)
     public ApiResponseBody<Long> created(@RequestBody @Valid AdminUserCreateDto dto, @AuthenticationPrincipal UserLoginInfo userLoginInfo, HttpServletRequest request) {
-        return ApiResponseBody.ok(createUserInfoByAdminUseCase.create(dto, userLoginInfo,request));
+        return ApiResponseBody.created(createUserInfoByAdminUseCase.create(dto, userLoginInfo,request));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정합니다.")
     @PrivacyAccess(privacyAction = PrivacyAction.UPDATE, targetType = PrivacyTargetType.USER, targetId = "id")
     public ApiResponseBody<Long> update(@PathVariable(name = "id") Long id, @RequestBody @Valid AdminUserUpdateDto dto, @AuthenticationPrincipal UserLoginInfo userLoginInfo, HttpServletRequest request) {
-        return ApiResponseBody.ok(updateUserInfoByAdminUseCase.update(id,dto, userLoginInfo,request));
+        return ApiResponseBody.updated(updateUserInfoByAdminUseCase.update(id,dto, userLoginInfo,request));
     }
 
     @DeleteMapping("/{id}/suspended")
@@ -87,7 +89,7 @@ public class AdminUserInfoController {
     public ApiResponseBody<Void> suspended(@PathVariable(name = "id") Long id,@AuthenticationPrincipal UserLoginInfo userLoginInfo){
         suspendedUserInfoByAdminUseCase.suspended(id, userLoginInfo);
 
-        return ApiResponseBody.ok(ApiCode.DELETED);
+        return ApiResponseBody.deleted();
     }
 
     @DeleteMapping("/suspended/checked")
@@ -95,7 +97,7 @@ public class AdminUserInfoController {
     @PrivacyAccess(privacyAction = PrivacyAction.DELETE, targetType = PrivacyTargetType.USER)
     public ApiResponseBody<Void> suspended(@RequestBody @Valid AdminUserSuspendedDto dto, @AuthenticationPrincipal UserLoginInfo userLoginInfo){
         suspendedUserInfoByAdminUseCase.suspendedChecked(dto,userLoginInfo);
-        return ApiResponseBody.ok(ApiCode.DELETED);
+        return ApiResponseBody.deleted();
     }
 
     @PatchMapping("/{id}/blocked")
@@ -103,7 +105,7 @@ public class AdminUserInfoController {
     @PrivacyAccess(privacyAction = PrivacyAction.UPDATE, targetType = PrivacyTargetType.USER)
     public ApiResponseBody<UserStatus> blocked(@PathVariable(name = "id") Long id, @AuthenticationPrincipal UserLoginInfo userLoginInfo){
 
-        return ApiResponseBody.ok(blockUserInfoByAdminUseCase.block(id, userLoginInfo));
+        return ApiResponseBody.updated(blockUserInfoByAdminUseCase.block(id, userLoginInfo));
     }
 
 

@@ -35,7 +35,7 @@ public class OpenSignupController {
     @PostMapping("/api/open/v1/signup/user")
     public ApiResponseBody<Void> signUp(@Valid @RequestBody OpenSignUpRequestDto requestDto) {
         signUpUserUseCase.signUp(requestDto);
-        return ApiResponseBody.ok(ApiCode.SUCCESS);
+        return ApiResponseBody.ok();
     }
 
     /**
@@ -47,7 +47,7 @@ public class OpenSignupController {
     @GetMapping("/api/open/v1/signup/user/verify-login-id")
     public ApiResponseBody<Void> signUpVerifyLoginId(@RequestParam(name = "loginId", required = true,defaultValue = "") String loginId) {
         signUpUserUseCase.verifyLoginId(loginId);
-        return ApiResponseBody.ok(ApiCode.SUCCESS);
+        return ApiResponseBody.ok();
     }
 
 
