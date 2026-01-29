@@ -1,3 +1,10 @@
+## 2026-01-29
+
+### Changed
+- Api 응답 시 공통 return DTO 적용(IdResponseDto.java)
+- ExceptionHandler ApiRseponseBody.setMeta() 적용
+
+
 ## 2026-01-28
 
 ### Changed

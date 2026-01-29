@@ -34,9 +34,8 @@ import java.util.Map;
 public class CustomRestExceptionHandler {
 
     @ExceptionHandler(JwtAuthenticationException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleJwtAuthenticationException(JwtAuthenticationException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleJwtAuthenticationException(JwtAuthenticationException ex) {
 
-//        log.warn("JwtAuthenticationException 발생");
 
         switch (ex.getLogLevel()) {
 //            case INFO -> log.info("JwtAuthenticationException.handleException INFO Level - code: {}, msg: {}, data: {}",
@@ -53,24 +52,21 @@ public class CustomRestExceptionHandler {
             }
         }
 
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage());
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+
         return ResponseEntity.status(ex.getErrorCode().getStatus())
-                .body(ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage(), MdcMetaDataUtil.traceInfo()));
+                .body(apiResponse);
     }
 
     @ExceptionHandler(BusinessRestException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleBusinessRestException(BusinessRestException ex) {
-//        log.warn("BusinessRestException 발생");
-
-        Map<String, Object> metaData = MdcMetaDataUtil.traceInfo();
+    public ResponseEntity<ApiResponseBody<Void>> handleBusinessRestException(BusinessRestException ex) {
 
         switch (ex.getLogLevel()) {
             case INFO -> {
 //                log.info("BusinessRestException.handleException INFO Level - code: {}, msg: {}, data: {}",
 //                        ex.getErrorCode(), ex.getMessage(), ex.getData());
 
-                if (ex.getData() != null) {     //info면서 data가 있는 경우 handler를 통해 예외 사항을 공유한다.
-                    metaData.put("data", ex.getData());
-                }
             }
             case WARN -> {
                 log.warn("[BusinessRestException] [usecase] [warn] code: {}, msg: {}, data: {}",
@@ -83,8 +79,12 @@ public class CustomRestExceptionHandler {
             }
         }
 
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage());
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+
         return ResponseEntity.status(ex.getErrorCode().getStatus())
-                .body(ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage(), metaData));
+                .body(apiResponse);
+
     }
 
     /**
@@ -94,11 +94,8 @@ public class CustomRestExceptionHandler {
      * @return
      */
     @ExceptionHandler(AbstractRestException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleAbstractRestException(AbstractRestException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleAbstractRestException(AbstractRestException ex) {
 
-//        [NOTE] exceptionType 기준으로 추적하고 싶은 경우 처리 - 단 마지막 finally에서 remove 필요
-//        MDC.put("exceptionType", ex.getClass().getSimpleName());
-//        log.warn("AbstractRestException 발생");
         String exceptionName = ex.getClass().getSimpleName();
         switch (ex.getLogLevel()) {
 //            case INFO -> log.info("AbstractRestException.handleException INFO Level - code: {}, msg: {}, data: {}",
@@ -114,8 +111,12 @@ public class CustomRestExceptionHandler {
             }
         }
 
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage());
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+
         return ResponseEntity.status(ex.getErrorCode().getStatus())
-                .body(ApiResponseBody.fail(ex.getErrorCode(), ex.getMessage(), MdcMetaDataUtil.traceInfo()));
+                .body(apiResponse);
+
     }
 
 }

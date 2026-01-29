@@ -39,44 +39,52 @@ public class GlobalRestExceptionHandler {
 
     // 400 - 잘못된 인자값
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorCode errorCode = ErrorCode.INVALID_FORMAT;
         log.warn("{}", ex); // 스택트레이스 별도 출력
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
 
     // 403 - 인증은 되었지만 권한 없음
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleAccessDeniedException(AccessDeniedException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleAccessDeniedException(AccessDeniedException ex) {
         ErrorCode errorCode = ErrorCode.FORBIDDEN;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
     // 400 - 필수 요청 파라미터 누락
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleMissingParamException(MissingServletRequestParameterException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleMissingParamException(MissingServletRequestParameterException ex) {
         ErrorCode errorCode = ErrorCode.VALIDATION_FAILED;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
     // 405 - 지원하지 않는 HTTP Method
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleHttpMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleHttpMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
-    // --- 이하 기존 예외 처리 그대로 유지 ---
-
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleNotFoundException(NoSuchElementException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleNotFoundException(NoSuchElementException ex) {
         ErrorCode errorCode = ErrorCode.NOT_FOUND;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -92,13 +100,12 @@ public class GlobalRestExceptionHandler {
 
         Map<String, Object> data = new HashMap<>();
         data.put("fieldErrors", fieldErrors);
-        data.put("traceId", MDC.get("trace_id"));
-        data.put("timestamp", System.currentTimeMillis());
-
         ErrorCode errorCode = ErrorCode.VALIDATION_FAILED;
         log.warn("입력값 검증 실패 (MethodArgumentNotValidException): {}", fieldErrors);
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, data));
+        ApiResponseBody<Map<String, Object>> apiResponse = ApiResponseBody.fail(errorCode, data);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -113,27 +120,31 @@ public class GlobalRestExceptionHandler {
 
         Map<String, Object> data = new HashMap<>();
         data.put("fieldErrors", fieldErrors);
-        data.put("traceId", MDC.get("trace_id"));
-        data.put("timestamp", System.currentTimeMillis());
-
         ErrorCode errorCode = ErrorCode.VALIDATION_FAILED;
         log.warn("입력값 검증 실패 (ConstraintViolationException): {}", fieldErrors);
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, data));
+        ApiResponseBody<Map<String, Object>> apiResponse = ApiResponseBody.fail(errorCode, data);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         ErrorCode errorCode = ErrorCode.INVALID_FORMAT;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
+
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleResourceNotFoundException(NoHandlerFoundException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleResourceNotFoundException(NoHandlerFoundException ex) {
         ErrorCode errorCode = ErrorCode.NOT_FOUND;
         log.warn("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
     @ExceptionHandler({
@@ -142,7 +153,7 @@ public class GlobalRestExceptionHandler {
             ArithmeticException.class,
             IllegalStateException.class
     })
-    public ResponseEntity<ApiResponseBody<Map<String, Object>>> handleSystemException(Exception ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleSystemException(Exception ex) {
 
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
 
@@ -155,27 +166,28 @@ public class GlobalRestExceptionHandler {
                 ex
         );
 
-        return ResponseEntity
-                .status(errorCode.getStatus())
-                .body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
+
     }
 
 //    @ExceptionHandler(NullPointerException.class)
-//    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleNullPointerException(NullPointerException ex) {
+//    public ResponseEntity<ApiResponseBody<Void>> handleNullPointerException(NullPointerException ex) {
 //        ErrorCode errorCode = ErrorCode.NULL_POINTER;
 //        log.error("{}", ex);
 //        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MdcMetaDataUtil.traceInfo()));
 //    }
 //
 //    @ExceptionHandler(IndexOutOfBoundsException.class)
-//    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleIndexOutOfBoundsException(IndexOutOfBoundsException ex) {
+//    public ResponseEntity<ApiResponseBody<Void>> handleIndexOutOfBoundsException(IndexOutOfBoundsException ex) {
 //        ErrorCode errorCode = ErrorCode.INDEX_OUT_OF_BOUNDS;
 //        log.error("{}", ex);
 //        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MdcMetaDataUtil.traceInfo()));
 //    }
 //
 //    @ExceptionHandler(ArithmeticException.class)
-//    public ResponseEntity<ApiResponseBody<Map<String,Object>>>  handleArithmeticException(ArithmeticException ex) {
+//    public ResponseEntity<ApiResponseBody<Void>>  handleArithmeticException(ArithmeticException ex) {
 //        ErrorCode errorCode = ErrorCode.ARITHMETIC_ERROR;
 //        log.error("{}", ex);
 //        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MdcMetaDataUtil.traceInfo()));
@@ -184,28 +196,32 @@ public class GlobalRestExceptionHandler {
 //
 //    // 500 - 잘못된 상태
 //    @ExceptionHandler(IllegalStateException.class)
-//    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleIllegalStateException(IllegalStateException ex) {
+//    public ResponseEntity<ApiResponseBody<Void>> handleIllegalStateException(IllegalStateException ex) {
 //        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
 //        log.error("{}", ex);
 //        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode,MdcMetaDataUtil.traceInfo()));
 //    }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleNoResourceFoundException(NoResourceFoundException ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleNoResourceFoundException(NoResourceFoundException ex) {
         ErrorCode errorCode = ErrorCode.INVALID_FORMAT;
         if (ex.getMessage() != null && ex.getMessage().contains("favicon.ico")) {
             log.debug("favicon.ico 요청 무시됨: {}", ex.getMessage());
         } else {
             log.error("{}", ex);
         }
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponseBody<Map<String,Object>>> handleGenericException(Exception ex) {
+    public ResponseEntity<ApiResponseBody<Void>> handleGenericException(Exception ex) {
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
         log.error("{}", ex);
-        return ResponseEntity.status(errorCode.getStatus()).body(ApiResponseBody.fail(errorCode, MdcMetaDataUtil.traceInfo()));
+        ApiResponseBody<Void> apiResponse = ApiResponseBody.fail(errorCode);
+        apiResponse.setMeta(MdcMetaDataUtil.traceInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(apiResponse);
     }
 
 }
