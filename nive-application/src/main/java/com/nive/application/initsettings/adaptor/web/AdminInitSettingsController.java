@@ -1,5 +1,6 @@
 package com.nive.application.initsettings.adaptor.web;
 
+import com.nive.application.common.IdResponseDto;
 import com.nive.application.initsettings.dto.AdminInitSettingsUpdateRequestDto;
 import com.nive.application.initsettings.usecase.UpdateInitSettingsUseCase;
 import com.nive.common.response.ApiResponseBody;
@@ -33,8 +34,8 @@ public class AdminInitSettingsController {
 
     @PutMapping("/{id}")
     @Operation(summary = "정책 정보 수정", description = "정책 정보를 수정합니다.")
-    public ApiResponseBody<Long> update(@PathVariable(name = "id") Long id, @RequestBody @Valid AdminInitSettingsUpdateRequestDto dto,
-                                        @AuthenticationPrincipal UserLoginInfo userLoginInfo){
+    public ApiResponseBody<IdResponseDto> update(@PathVariable(name = "id") Long id, @RequestBody @Valid AdminInitSettingsUpdateRequestDto dto,
+                                                 @AuthenticationPrincipal UserLoginInfo userLoginInfo){
 
         return ApiResponseBody.updated(updateInitSettingsUseCase.updateInitSetting(id,dto, userLoginInfo));
 

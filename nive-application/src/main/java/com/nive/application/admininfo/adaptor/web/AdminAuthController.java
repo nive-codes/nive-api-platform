@@ -3,6 +3,7 @@ package com.nive.application.admininfo.adaptor.web;
 import com.nive.application.admininfo.dto.*;
 import com.nive.application.admininfo.query.AdminAuthListQueryDto;
 import com.nive.application.admininfo.usecase.*;
+import com.nive.application.common.IdResponseDto;
 import com.nive.common.response.ApiCode;
 import com.nive.common.response.ApiResponseBody;
 
@@ -76,7 +77,7 @@ public class AdminAuthController {
             @ApiResponse(responseCode = "201", description = "생성"),
             @ApiResponse(responseCode = "400", description = "비밀번호 검증 실패, 로그인 id 검증 실패, 이메일 검증 실패 등")
     })
-    public ApiResponseBody<Long> save(
+    public ApiResponseBody<IdResponseDto> save(
              @RequestBody @Valid AdminAuthRequestDto dto,
             @AuthenticationPrincipal UserLoginInfo userLoginInfo,
             HttpServletRequest request
@@ -90,7 +91,7 @@ public class AdminAuthController {
             @ApiResponse(responseCode = "200", description = "수정"),
             @ApiResponse(responseCode = "400", description = "비밀번호 검증 실패, 이메일 검증 실패 등")
     })
-    public ApiResponseBody<Long> update(
+    public ApiResponseBody<IdResponseDto> update(
             @PathVariable Long id,
             @Valid @RequestBody AdminAuthUpdateDto dto,
             @AuthenticationPrincipal UserLoginInfo userLoginInfo,
@@ -101,7 +102,7 @@ public class AdminAuthController {
 
     @Operation(summary = "관리자 정지 처리", description = "관리자를 정지(삭제) 처리 합니다.")
     @PatchMapping("/{id}/suspend")
-    public ApiResponseBody<?> adminDelete(
+    public ApiResponseBody<Void> adminDelete(
             @PathVariable Long id,
             @AuthenticationPrincipal UserLoginInfo userLoginInfo,
             HttpServletRequest request
@@ -113,7 +114,7 @@ public class AdminAuthController {
 
     @Operation(summary = "관리자 선택 정지 처리", description = "관리자를 정지(삭제) 처리 합니다.")
     @PatchMapping("/suspend/checked")
-    public ApiResponseBody<?> adminDelete(
+    public ApiResponseBody<Void> adminDelete(
             @RequestBody @Valid AdminAuthSuspendCheckedDto dto,
             @AuthenticationPrincipal UserLoginInfo userLoginInfo,
             HttpServletRequest request
@@ -124,7 +125,7 @@ public class AdminAuthController {
 
     @Operation(summary = "관리자 블락 처리", description = "관리자 블락 처리를 진행합니다.")
     @PatchMapping("/{id}/block")
-    public ApiResponseBody<?> adminBlock(
+    public ApiResponseBody<Void> adminBlock(
             @PathVariable Long id,
             @AuthenticationPrincipal UserLoginInfo userLoginInfo,
             HttpServletRequest request

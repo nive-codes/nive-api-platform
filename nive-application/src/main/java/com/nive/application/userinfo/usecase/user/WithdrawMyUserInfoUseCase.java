@@ -54,7 +54,6 @@ public class WithdrawMyUserInfoUseCase {
             throw new BusinessRestException(ErrorCode.VALIDATION_FAILED, LogLevel.INFO);
         }
 
-        //[TODO] 회원 토큰 전체 삭제 처리
     }
 
     /**

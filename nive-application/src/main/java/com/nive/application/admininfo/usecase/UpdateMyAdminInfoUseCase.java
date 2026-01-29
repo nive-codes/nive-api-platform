@@ -2,6 +2,7 @@ package com.nive.application.admininfo.usecase;
 
 import com.nive.application.admininfo.dto.AdminMyInfoUpdateDto;
 import com.nive.application.admininfo.support.AdminEntityLoader;
+import com.nive.application.common.IdResponseDto;
 import com.nive.common.exception.BusinessRestException;
 import com.nive.common.response.ErrorCode;
 import com.nive.common.response.LogLevel;
@@ -43,7 +44,7 @@ public class UpdateMyAdminInfoUseCase {
      * @return
      */
     @Transactional
-    public Long update(AdminMyInfoUpdateDto dto, UserLoginInfo userLoginInfo, HttpServletRequest request){
+    public IdResponseDto update(AdminMyInfoUpdateDto dto, UserLoginInfo userLoginInfo, HttpServletRequest request){
         String context = "[관리자] [관리자 정보] [수정]";
 
         AdminInfoHelperDto adminInfoHelperDto = userInfoUtilHelper.getVerifiedCurrentAdminInfo(userLoginInfo, context);
@@ -63,7 +64,7 @@ public class UpdateMyAdminInfoUseCase {
         CommonValidator.validatePassword(dto.getPassword(), context);
         user.changePassword(passwordEncoder.encode(dto.getPassword()));
 
-        return user.getId();
+        return new IdResponseDto(user.getId());
 
     }
 

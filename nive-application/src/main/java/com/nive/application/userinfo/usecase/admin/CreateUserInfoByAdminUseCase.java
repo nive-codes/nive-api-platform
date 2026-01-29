@@ -1,5 +1,6 @@
 package com.nive.application.userinfo.usecase.admin;
 
+import com.nive.application.common.IdResponseDto;
 import com.nive.application.userinfo.dto.AdminUserCreateDto;
 import com.nive.common.exception.BusinessRestException;
 import com.nive.common.response.ErrorCode;
@@ -37,7 +38,7 @@ public class CreateUserInfoByAdminUseCase {
      * @return
      */
     @Transactional
-    public Long create(AdminUserCreateDto dto, UserLoginInfo userLoginInfo, HttpServletRequest request) {
+    public IdResponseDto create(AdminUserCreateDto dto, UserLoginInfo userLoginInfo, HttpServletRequest request) {
 
         String context = "[관리자] [회원 등록]";
         AdminInfoHelperDto adminUser = userInfoUtilHelper.getVerifiedCurrentAdminInfo(userLoginInfo, context);
@@ -55,7 +56,7 @@ public class CreateUserInfoByAdminUseCase {
         //[NOTE] 관리자에 의해 생성되므로 adminUserId로 세팅
         save.updateJoinedBy(adminUser.getId());
 
-        return save.getId();
+        return new IdResponseDto(save.getId());
     }
 
     private void validateLoginId(AdminUserCreateDto dto) {

@@ -1,6 +1,7 @@
 package com.nive.application.admininfo.usecase;
 
 import com.nive.application.admininfo.dto.AdminAuthRequestDto;
+import com.nive.application.common.IdResponseDto;
 import com.nive.common.exception.BusinessRestException;
 import com.nive.common.response.ErrorCode;
 import com.nive.common.response.LogLevel;
@@ -57,7 +58,7 @@ public class CreateAdminInfoUseCase {
      * @return
      */
     @Transactional
-    public Long save(AdminAuthRequestDto dto, UserLoginInfo userLoginInfo, HttpServletRequest request) {
+    public IdResponseDto save(AdminAuthRequestDto dto, UserLoginInfo userLoginInfo, HttpServletRequest request) {
         String context = "[관리자] [관리자 정보] [생성]";
 
         userInfoUtilHelper.getVerifiedCurrentAdminInfo(userLoginInfo, context);
@@ -77,7 +78,7 @@ public class CreateAdminInfoUseCase {
 
         userRoleRepository.save(UserRole.create(dto.getRole(),save.getId()));
 
-        return save.getId();
+        return new IdResponseDto(save.getId());
     }
 
 

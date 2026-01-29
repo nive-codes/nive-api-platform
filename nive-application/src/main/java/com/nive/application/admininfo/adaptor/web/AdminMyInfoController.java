@@ -4,6 +4,7 @@ import com.nive.application.admininfo.dto.AdminMyInfoResponseDto;
 import com.nive.application.admininfo.dto.AdminMyInfoUpdateDto;
 import com.nive.application.admininfo.usecase.GetMyAdminInfoQuery;
 import com.nive.application.admininfo.usecase.UpdateMyAdminInfoUseCase;
+import com.nive.application.common.IdResponseDto;
 import com.nive.common.response.ApiResponseBody;
 
 import com.nive.application.security.dto.UserLoginInfo;
@@ -44,7 +45,7 @@ public class AdminMyInfoController {
 
     @Operation(summary = "관리자 본인 수정", description = "관리자 정보를 수정합니다.(비밀번호)")
     @PutMapping
-    public ApiResponseBody<Long> update(
+    public ApiResponseBody<IdResponseDto> update(
             @Valid @RequestBody AdminMyInfoUpdateDto dto,
             @AuthenticationPrincipal UserLoginInfo userLoginInfo,
             HttpServletRequest request

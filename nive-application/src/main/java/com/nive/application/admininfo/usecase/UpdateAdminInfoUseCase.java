@@ -2,6 +2,7 @@ package com.nive.application.admininfo.usecase;
 
 import com.nive.application.admininfo.dto.AdminAuthUpdateDto;
 import com.nive.application.admininfo.support.AdminEntityLoader;
+import com.nive.application.common.IdResponseDto;
 import com.nive.common.exception.BusinessRestException;
 import com.nive.common.response.ErrorCode;
 import com.nive.common.response.LogLevel;
@@ -61,7 +62,7 @@ public class UpdateAdminInfoUseCase {
      * @return
      */
     @Transactional
-    public Long update(Long id, AdminAuthUpdateDto dto, UserLoginInfo userLoginInfo, HttpServletRequest request){
+    public IdResponseDto update(Long id, AdminAuthUpdateDto dto, UserLoginInfo userLoginInfo, HttpServletRequest request){
         String context = "[관리자] [관리자 정보] [수정]";
 
         userInfoUtilHelper.getVerifiedCurrentAdminInfo(userLoginInfo, context);
@@ -97,7 +98,7 @@ public class UpdateAdminInfoUseCase {
         userRoleRepository.flush(); /*지연 문제 해결-db 유니크 오류 방지*/
         userRoleRepository.save(UserRole.create(dto.getRole(),user.getId()));
 
-        return user.getId();
+        return new IdResponseDto(user.getId());
 
     }
 

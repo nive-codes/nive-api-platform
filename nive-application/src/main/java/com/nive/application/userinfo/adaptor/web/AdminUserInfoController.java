@@ -1,5 +1,6 @@
 package com.nive.application.userinfo.adaptor.web;
 
+import com.nive.application.common.IdResponseDto;
 import com.nive.application.userinfo.query.AdminUserListQueryDto;
 import com.nive.application.userinfo.query.AdminUserWithdrawListQueryDto;
 import com.nive.application.userinfo.dto.*;
@@ -72,14 +73,14 @@ public class AdminUserInfoController {
     @PostMapping
     @Operation(summary = "회원 정보 등록", description = "회원 정보를 등록합니다.")
     @PrivacyAccess(privacyAction = PrivacyAction.CREATE, targetType = PrivacyTargetType.USER)
-    public ApiResponseBody<Long> created(@RequestBody @Valid AdminUserCreateDto dto, @AuthenticationPrincipal UserLoginInfo userLoginInfo, HttpServletRequest request) {
+    public ApiResponseBody<IdResponseDto> created(@RequestBody @Valid AdminUserCreateDto dto, @AuthenticationPrincipal UserLoginInfo userLoginInfo, HttpServletRequest request) {
         return ApiResponseBody.created(createUserInfoByAdminUseCase.create(dto, userLoginInfo,request));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정합니다.")
     @PrivacyAccess(privacyAction = PrivacyAction.UPDATE, targetType = PrivacyTargetType.USER, targetId = "id")
-    public ApiResponseBody<Long> update(@PathVariable(name = "id") Long id, @RequestBody @Valid AdminUserUpdateDto dto, @AuthenticationPrincipal UserLoginInfo userLoginInfo, HttpServletRequest request) {
+    public ApiResponseBody<IdResponseDto> update(@PathVariable(name = "id") Long id, @RequestBody @Valid AdminUserUpdateDto dto, @AuthenticationPrincipal UserLoginInfo userLoginInfo, HttpServletRequest request) {
         return ApiResponseBody.updated(updateUserInfoByAdminUseCase.update(id,dto, userLoginInfo,request));
     }
 

@@ -1,5 +1,6 @@
 package com.nive.application.initsettings.usecase;
 
+import com.nive.application.common.IdResponseDto;
 import com.nive.application.initsettings.dto.AdminInitSettingsUpdateRequestDto;
 import com.nive.common.response.ErrorCode;
 import com.nive.common.response.LogLevel;
@@ -36,14 +37,15 @@ public class UpdateInitSettingsUseCase {
 
 
     @Transactional
-    public Long updateInitSetting(Long id, AdminInitSettingsUpdateRequestDto dto, UserLoginInfo userLoginInfo) {
+    public IdResponseDto updateInitSetting(Long id, AdminInitSettingsUpdateRequestDto dto, UserLoginInfo userLoginInfo) {
 
         // DB 업데이트
-        InitSettings entity = initSettingsRepository.findBySettingKey(dto.getSettingKey())
+        InitSettings entity = initSettingsRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("{} [정책 없음] key : {}", "[관리자] [정책 수정]", dto.getSettingKey());
                     throw new BusinessRestException(ErrorCode.NOT_FOUND,"수정할 정책을 찾을 수 없습니다.", LogLevel.WARN);
                 });
+
         entity.updateValue(dto.getSettingValue(), dto.getDescription());
 
         // [선택] Redis 업데이트
@@ -56,7 +58,7 @@ public class UpdateInitSettingsUseCase {
         }
 
         log.info("[InitSettings] 정책 업데이트 완료: key={}, redisSync={}", dto.getSettingKey(), dto.isSyncToRedis());
-        return entity.getSettingId();
+        return new IdResponseDto(entity.getSettingId());
     }
 
     private String redisKey(String key) {
