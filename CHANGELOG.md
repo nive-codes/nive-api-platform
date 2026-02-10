@@ -1,3 +1,13 @@
+## 2026-02-10
+
+### Changed
+- Spring Security FilterChain 구조 개선
+    - 정적 리소스 접근을 위한 전용 SecurityFilterChain 추가
+    - 루트(/, /index.html) 접근 허용 체인 분리 (SSR / Template Engine 대응)
+- REST API 서버 / 정적 리소스 서빙 서버 간 보안 정책 분리
+- 전역(@Order(99)) FilterChain의 역할을 “최종 인증 게이트”로 명확화
+- h2를 쓰는 경우 주석 추가(SecurityConfig.java)
+
 ## 2026-01-29
 
 ### Changed

@@ -6,6 +6,7 @@ import com.nive.web.config.properties.SecurityWhitelistProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
  * - URL 패턴에 따라 인증/인가를 세분화하여 FilterChain을 분리 적용
  * - JWT 기반 인증 → Stateless 세션 전략 사용
  * - Exception 처리(JSON 응답) → 커스텀 EntryPoint / AccessDeniedHandler 사용
+ * - [NOTE] h2를 쓰는 경우를 대비해 SecurityPolicy로 iframe 관리(개발, 통합 테스트 등에서만 권장)
  * -> actuator의 경우 whitelist 오픈 처리
  * -> 마지막 999의 필터 체인은 전역으로 처리되는 필터 체인이므로 주의 필요
  * @since 2025-04-08
@@ -44,19 +46,64 @@ public class SecurityConfig {
     private final SecurityWhitelistProperties whitelistProperties;
 
     /**
-     * 0순위: 권한 없이 허용 처리 swagger / actuator 허용
+     * 정적 리소스를 활용하는 경우 사용
+     * [NOTE] rest api 서버로 활용하는 경우엔 주석 바랍니다.
+     * @param http
+     * @return
+     * @throws Exception
      */
     @Bean
     @Order(0)
-    public SecurityFilterChain swaggerExcludeChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain freeAllowStaticExcludeChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/docs/**", "/openapi/**", "/docs"
-                        ,"/actuator/**","/aws/**", "/api/test/**" //test api는 별도로 프로파일로 오픈 여부 처리
-                )
+                .securityMatcher(PathRequest.toStaticResources().atCommonLocations())
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .csrf(csrf -> csrf.disable());
         return http.build();
     }
+
+    /**
+     * thymeleaf 등 템플릿 엔진을 쓰는 경우 허용
+     *  [NOTE] rest api 서버로 활용하는 경우엔 주석 바랍니다.
+     * @param http
+     * @return
+     * @throws Exception
+     */
+    @Bean
+    @Order(1)
+    public SecurityFilterChain rootAllowChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/", "/index.html")
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .csrf(csrf -> csrf.disable());
+        return http.build();
+    }
+
+    /**
+     * 공개 허용 (테스트 / 운영 편의용 API)
+     * swagger / actuator 허용(별도 필터로 처리)
+     */
+    @Bean
+    @Order(2)
+    public SecurityFilterChain freeAllowExcludeChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher(
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**",
+                        "/docs/**",
+                        "/openapi/**",
+                        "/actuator/**",
+                        "/aws/**",
+                        "/api/test/**"
+                )
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .csrf(csrf -> csrf.disable());
+
+        return http.build();
+    }
+
 
     /**
      * security 6 기준
@@ -64,7 +111,7 @@ public class SecurityConfig {
      * - 프레임 옵션 sameOrigin → H2-console 사용 가능
      */
     @Bean
-    @Order(1)
+    @Order(3)
     public SecurityFilterChain openApiSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector handlerMappingIntrospector) throws Exception {
         log.info("[SecurityConfig] openApiSecurityFilterChain 등록됨");
         applyCommonSecurity(http)
@@ -85,7 +132,7 @@ public class SecurityConfig {
      * - 프레임 옵션 sameOrigin → H2-console 사용 가능
      */
     @Bean
-    @Order(2)
+    @Order(4)
     public SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector handlerMappingIntrospector) throws Exception {
         log.info("[SecurityConfig] h2ConsoleSecurityFilterChain 등록됨");
         applyCommonSecurity(http)
@@ -110,7 +157,7 @@ public class SecurityConfig {
      * - JWT 인증 필터 + 예외 처리 핸들링
      */
     @Bean
-    @Order(3)
+    @Order(5)
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector handlerMappingIntrospector) throws Exception {
         applyCommonSecurity(http)
                 .securityMatcher(new MvcRequestMatcher(handlerMappingIntrospector, "/api/user/**"))
@@ -132,7 +179,7 @@ public class SecurityConfig {
      * - JWT 인증 필터 + 예외 처리 핸들링
      */
     @Bean
-    @Order(5)
+    @Order(6)
     public SecurityFilterChain coreSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector handlerMappingIntrospector) throws Exception {
         applyCommonSecurity(http)
                 .securityMatcher(new MvcRequestMatcher(handlerMappingIntrospector, "/api/core/**"))
@@ -154,7 +201,7 @@ public class SecurityConfig {
      * - 인증/인가 실패 시 JSON 응답 반환
      */
     @Bean
-    @Order(6)
+    @Order(7)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector handlerMappingIntrospector) throws Exception {
         applyCommonSecurity(http)
                 .securityMatcher(new MvcRequestMatcher(handlerMappingIntrospector, "/api/admin/**"))
@@ -181,12 +228,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .formLogin(form -> form.disable())   // <- /login 엔드포인트 등록 안 함
+                .formLogin(form -> form.disable())   // <- /login 엔드포인트 등록 안 함(form 로그인 비활성화)
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").denyAll()   // <- 혹시라도 접근하면 403
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated()   //나머지 요청은 모두 인증 필요
                 );
 
         return http.build();
